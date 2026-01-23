@@ -209,7 +209,9 @@ def evaluate_answerable(dataset):
             if type_map == "pr":
                 type_map = "url"
             scores[type_map].append(score)
-        dataset["gpt4-correctness"].append(score)
+        # Normalize F1 (0-1) to same scale as Likert (0-100) for fair averaging
+        normalized_score = score * 100 if type_map != "content" else score
+        dataset["gpt4-correctness"].append(normalized_score)
     
     avg_correctness = [c for c in dataset["gpt4-correctness"] if c >= 0]
     dataset["gpt4-correctness-avg"] = sum(avg_correctness) / len(avg_correctness)
